@@ -23,7 +23,8 @@ import java.util.List;
  */
 public class SampleExtension extends MessageProcessor {
 
-    public static final String NAME = "SampleExtension";
+    //this name will show up in the mParticle UI
+    public static final String NAME = "Your Company Name";
     //most services require at least an API key to connect to them
     public static final String SETTING_API_KEY = "apiKey";
     //sample segment-level setting
@@ -32,7 +33,7 @@ public class SampleExtension extends MessageProcessor {
     @Override
     public ModuleRegistrationResponse processRegistrationRequest(ModuleRegistrationRequest request) {
         ModuleRegistrationResponse response = new ModuleRegistrationResponse(NAME, "1.0");
-        response.setDescription("Sample Integration");
+        response.setDescription("A brief description of your company.");
 
         //Set the permissions - the device and user identities that this service can have access to
         Permissions permissions = new Permissions();
