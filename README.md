@@ -1,4 +1,4 @@
-# Sample Extension
+# Sample Firehose Integration
 
 This is a sample showing how to integrate mParticle into a new API, using the [mParticle Java SDK](https://github.com/mParticle/mparticle-sdk-java) over Amazon's [Lambda platform](https://aws.amazon.com/lambda/). If you're looking to add a new API to mParticle, clone and use this repo as a starting point!
 
