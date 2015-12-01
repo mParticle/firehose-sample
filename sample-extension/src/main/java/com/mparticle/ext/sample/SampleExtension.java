@@ -24,16 +24,16 @@ import java.util.List;
 public class SampleExtension extends MessageProcessor {
 
     //this name will show up in the mParticle UI
-    public static final String NAME = "Your Company Name";
+    public static final String NAME = "Alooma";
     //most services require at least an API key to connect to them
-    public static final String SETTING_API_KEY = "apiKey";
+    public static final String SETTING_TOKEN = "token";
     //sample segment-level setting
-    public static final String SETTING_MAILING_LIST_ID = "mailingListId";
+    public static final String SETTING_HOSTNAME = "hostname";
 
     @Override
     public ModuleRegistrationResponse processRegistrationRequest(ModuleRegistrationRequest request) {
         ModuleRegistrationResponse response = new ModuleRegistrationResponse(NAME, "1.0");
-        response.setDescription("A brief description of your company.");
+        response.setDescription("Modern data plumbing.");
 
         //Set the permissions - the device and user identities that this service can have access to
         Permissions permissions = new Permissions();
@@ -49,17 +49,14 @@ public class SampleExtension extends MessageProcessor {
         //you can using different settings for Event Processing vs. Audience Processing, but in this case
         //we'll just use the same object, specifying that only an API key is required for each.
         List<Setting> processorSettings = Arrays.asList(
-                new TextSetting(SETTING_API_KEY, "API Key").setIsRequired(true)
+                new TextSetting(SETTING_TOKEN, "Token").setIsRequired(true),
+                new TextSetting(SETTING_HOSTNAME, "Hostname").setIsRequired(true)
         );
 
         //specify the supported event types. you should override the parent MessageProcessor methods
         //that correlate to each of these event types.
         List<Event.Type> supportedEventTypes = Arrays.asList(
-                Event.Type.CUSTOM_EVENT,
-                Event.Type.PUSH_SUBSCRIPTION,
-                Event.Type.PUSH_MESSAGE_RECEIPT,
-                Event.Type.USER_ATTRIBUTE_CHANGE,
-                Event.Type.USER_IDENTITY_CHANGE);
+                Event.Type.CUSTOM_EVENT);
 
         //this extension only supports event data coming from Android and iOS devices
         List<RuntimeEnvironment.Type> environments = Arrays.asList(
@@ -78,7 +75,6 @@ public class SampleExtension extends MessageProcessor {
         //Customers can configure a different set of account-level settings (such as API key here), and
         //Segment-level settings (Mailing List ID here).
         List<Setting> subscriptionSettings = new LinkedList<>();
-        subscriptionSettings.add(new IntegerSetting(SETTING_MAILING_LIST_ID, "Mailing List ID"));
 
         AudienceProcessingRegistration audienceRegistration = new AudienceProcessingRegistration()
                 .setAccountSettings(processorSettings)
@@ -117,6 +113,7 @@ public class SampleExtension extends MessageProcessor {
 
     @Override
     public void processCustomEvent(CustomEvent event) throws IOException {
+
         super.processCustomEvent(event);
     }
 
