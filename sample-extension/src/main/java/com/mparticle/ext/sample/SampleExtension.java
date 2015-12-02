@@ -1,13 +1,5 @@
 package com.mparticle.ext.sample;
 
-import com.mparticle.sdk.MessageProcessor;
-import com.mparticle.sdk.model.audienceprocessing.AudienceMembershipChangeRequest;
-import com.mparticle.sdk.model.audienceprocessing.AudienceMembershipChangeResponse;
-import com.mparticle.sdk.model.audienceprocessing.AudienceSubscriptionRequest;
-import com.mparticle.sdk.model.audienceprocessing.AudienceSubscriptionResponse;
-import com.mparticle.sdk.model.eventprocessing.*;
-import com.mparticle.sdk.model.registration.*;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -17,7 +9,32 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mparticle.sdk.MessageProcessor;
+import com.mparticle.sdk.model.audienceprocessing.AudienceMembershipChangeRequest;
+import com.mparticle.sdk.model.audienceprocessing.AudienceMembershipChangeResponse;
+import com.mparticle.sdk.model.audienceprocessing.AudienceSubscriptionRequest;
+import com.mparticle.sdk.model.audienceprocessing.AudienceSubscriptionResponse;
+import com.mparticle.sdk.model.eventprocessing.CustomEvent;
+import com.mparticle.sdk.model.eventprocessing.Event;
+import com.mparticle.sdk.model.eventprocessing.EventProcessingRequest;
+import com.mparticle.sdk.model.eventprocessing.EventProcessingResponse;
+import com.mparticle.sdk.model.eventprocessing.Identity;
+import com.mparticle.sdk.model.eventprocessing.PushMessageReceiptEvent;
+import com.mparticle.sdk.model.eventprocessing.PushSubscriptionEvent;
+import com.mparticle.sdk.model.eventprocessing.RuntimeEnvironment;
+import com.mparticle.sdk.model.eventprocessing.UserIdentity;
+import com.mparticle.sdk.model.eventprocessing.UserIdentityChangeEvent;
+import com.mparticle.sdk.model.registration.AudienceProcessingRegistration;
+import com.mparticle.sdk.model.registration.EventProcessingRegistration;
+import com.mparticle.sdk.model.registration.ModuleRegistrationRequest;
+import com.mparticle.sdk.model.registration.ModuleRegistrationResponse;
+import com.mparticle.sdk.model.registration.Permissions;
+import com.mparticle.sdk.model.registration.Setting;
+import com.mparticle.sdk.model.registration.TextSetting;
+import com.mparticle.sdk.model.registration.UserIdentityPermission;
 import org.glassfish.jersey.client.JerseyClientBuilder;
+import org.glassfish.jersey.jackson.JacksonFeature;
 
 /**
  * Arbitrary sample extension. Typically this class would interface
@@ -119,7 +136,10 @@ public class SampleExtension extends MessageProcessor {
 
     @Override
     public void processCustomEvent(CustomEvent event) throws IOException {
-        Client client = JerseyClientBuilder.createClient();
+        Client client = JerseyClientBuilder.createClient()
+                .register(ObjectMapper.class)
+                .register(JacksonFeature.class);
+
         WebTarget webTarget = client.target("https://alooma.alooma.io");
         Response response = webTarget.path("rest").request()
                 .accept(MediaType.APPLICATION_JSON_TYPE)

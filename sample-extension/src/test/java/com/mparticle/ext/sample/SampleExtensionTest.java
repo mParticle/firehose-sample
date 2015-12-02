@@ -30,7 +30,8 @@ public class SampleExtensionTest extends TestCase {
     }
 
     public void testProcessCustomEvent() throws Exception {
-
+        //SampleExtension extension = new SampleExtension();
+        //extension.processCustomEvent(new CustomEvent());
     }
 
     public void testProcessAudienceMembershipChangeRequest() throws Exception {
