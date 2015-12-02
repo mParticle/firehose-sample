@@ -12,6 +12,12 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import org.glassfish.jersey.client.JerseyClientBuilder;
 
 /**
  * Arbitrary sample extension. Typically this class would interface
@@ -113,7 +119,11 @@ public class SampleExtension extends MessageProcessor {
 
     @Override
     public void processCustomEvent(CustomEvent event) throws IOException {
-
+        Client client = JerseyClientBuilder.createClient();
+        WebTarget webTarget = client.target("https://alooma.alooma.io");
+        Response response = webTarget.path("rest").request()
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .post(Entity.json(event));
         super.processCustomEvent(event);
     }
 
