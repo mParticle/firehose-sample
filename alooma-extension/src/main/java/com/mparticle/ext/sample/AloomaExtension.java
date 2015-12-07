@@ -11,49 +11,16 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mparticle.sdk.MessageProcessor;
-import com.mparticle.sdk.model.audienceprocessing.AudienceMembershipChangeRequest;
-import com.mparticle.sdk.model.audienceprocessing.AudienceMembershipChangeResponse;
-import com.mparticle.sdk.model.audienceprocessing.AudienceSubscriptionRequest;
-import com.mparticle.sdk.model.audienceprocessing.AudienceSubscriptionResponse;
-import com.mparticle.sdk.model.eventprocessing.CustomEvent;
-import com.mparticle.sdk.model.eventprocessing.ErrorEvent;
-import com.mparticle.sdk.model.eventprocessing.Event;
-import com.mparticle.sdk.model.eventprocessing.EventProcessingRequest;
-import com.mparticle.sdk.model.eventprocessing.EventProcessingResponse;
-import com.mparticle.sdk.model.eventprocessing.Identity;
-import com.mparticle.sdk.model.eventprocessing.PrivacySettingChangeEvent;
-import com.mparticle.sdk.model.eventprocessing.PushMessageReceiptEvent;
-import com.mparticle.sdk.model.eventprocessing.PushSubscriptionEvent;
-import com.mparticle.sdk.model.eventprocessing.ProductActionEvent;
-import com.mparticle.sdk.model.eventprocessing.ApplicationStateTransitionEvent;
-import com.mparticle.sdk.model.eventprocessing.RuntimeEnvironment;
-import com.mparticle.sdk.model.eventprocessing.ScreenViewEvent;
-import com.mparticle.sdk.model.eventprocessing.SessionEndEvent;
-import com.mparticle.sdk.model.eventprocessing.SessionStartEvent;
-import com.mparticle.sdk.model.eventprocessing.UserAttributeChangeEvent;
-import com.mparticle.sdk.model.eventprocessing.UserIdentity;
-import com.mparticle.sdk.model.eventprocessing.UserIdentityChangeEvent;
-import com.mparticle.sdk.model.registration.Account;
-import com.mparticle.sdk.model.registration.AudienceProcessingRegistration;
-import com.mparticle.sdk.model.registration.EventProcessingRegistration;
-import com.mparticle.sdk.model.registration.ModuleRegistrationRequest;
-import com.mparticle.sdk.model.registration.ModuleRegistrationResponse;
-import com.mparticle.sdk.model.registration.Permissions;
-import com.mparticle.sdk.model.registration.Setting;
-import com.mparticle.sdk.model.registration.TextSetting;
-import com.mparticle.sdk.model.registration.UserIdentityPermission;
+import com.mparticle.sdk.model.audienceprocessing.*;
+import com.mparticle.sdk.model.eventprocessing.*;
+import com.mparticle.sdk.model.registration.*;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
 /**
- * Arbitrary sample extension. Typically this class would interface
- * with another library to connect to a 3rd-party API.
- * <p>
- * The two big responsibilities of a MessageProcessor are:
- * 1. Describe its capabilities and settings to mParticle
- * 2. Process batches of data sent from mParticle, typically to translate and send somewhere else.
+ * Alooma mParticle Firehose extension.
  */
-public class SampleExtension extends MessageProcessor {
+public class AloomaExtension extends MessageProcessor {
 
     //this name will show up in the mParticle UI
     public static final String NAME = "Alooma";
@@ -91,22 +58,17 @@ public class SampleExtension extends MessageProcessor {
         );
         response.setPermissions(permissions);
 
-        //the extension needs to define the settings it needs in order to connect to its respective service(s).
-        //you can using different settings for Event Processing vs. Audience Processing, but in this case
-        //we'll just use the same object, specifying that only an API key is required for each.
         List<Setting> processorSettings = Arrays.asList(
                 new TextSetting(SETTING_TOKEN, "Token").setIsRequired(true),
                 new TextSetting(SETTING_HOSTNAME, "Hostname").setIsRequired(true)
         );
 
-        //specify the supported event types. you should override the parent MessageProcessor methods
-        //that correlate to each of these event types.
         List<Event.Type> supportedEventTypes = Arrays.asList(
                 Event.Type.APPLICATION_STATE_TRANSITION,
                 Event.Type.CUSTOM_EVENT,
                 Event.Type.ERROR,
                 Event.Type.PRIVACY_SETTING_CHANGE,
-                //Event.Type.PRODUCT_ACTION,
+                Event.Type.PRODUCT_ACTION,
                 Event.Type.PUSH_MESSAGE_RECEIPT,
                 Event.Type.PUSH_SUBSCRIPTION,
                 Event.Type.SCREEN_VIEW,
@@ -116,14 +78,12 @@ public class SampleExtension extends MessageProcessor {
                 Event.Type.USER_IDENTITY_CHANGE
         );
 
-        //this extension only supports event data coming from Android and iOS devices
         List<RuntimeEnvironment.Type> environments = Arrays.asList(
                 RuntimeEnvironment.Type.ANDROID,
                 RuntimeEnvironment.Type.IOS,
                 RuntimeEnvironment.Type.UNKNOWN
                 );
 
-        //finally use all of the above to assemble the EventProcessingRegistration object and set it in the response
         EventProcessingRegistration eventProcessingRegistration = new EventProcessingRegistration()
                 .setSupportedRuntimeEnvironments(environments)
                 .setAccountSettings(processorSettings)

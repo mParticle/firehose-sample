@@ -7,7 +7,7 @@ import junit.framework.TestCase;
  *
  * These tests can be run by executing the 'test' gradle task via `./gradlew test`
  */
-public class SampleExtensionTest extends TestCase {
+public class AloomaExtensionTest extends TestCase {
 
     public void testProcessRegistrationRequest() throws Exception {
 
@@ -30,7 +30,7 @@ public class SampleExtensionTest extends TestCase {
     }
 
     public void testProcessCustomEvent() throws Exception {
-        //SampleExtension extension = new SampleExtension();
+        //AloomaExtension extension = new AloomaExtension();
         //extension.processCustomEvent(new CustomEvent());
     }
 
