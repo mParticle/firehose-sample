@@ -162,6 +162,12 @@ public class SampleExtension extends MessageProcessor {
     }
 
     @Override
+    public void processProductActionEvent(ProductActionEvent event) throws IOException {
+        sendEvent(event);
+        super.processProductActionEvent(event);
+    }
+
+    @Override
     public void processApplicationStateTransitionEvent(ApplicationStateTransitionEvent event) throws IOException {
         sendEvent(event);
         super.processApplicationStateTransitionEvent(event);
