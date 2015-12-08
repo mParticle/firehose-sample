@@ -2,7 +2,6 @@ package com.mparticle.ext.alooma;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
@@ -40,7 +39,7 @@ public class AloomaExtension extends MessageProcessor {
     @Override
     public ModuleRegistrationResponse processRegistrationRequest(ModuleRegistrationRequest request) {
         ModuleRegistrationResponse response = new ModuleRegistrationResponse(NAME, "1.0");
-        response.setDescription("Modern data plumbing.");
+        response.setDescription("Alooma lets you build data pipeline in minutes, so you can focus on your business. Our SaaS service allows you to create scalable, fault-tolerant connections for every data source you have today and will have in the future directly into Amazon Redshift - all in real-time. We believe you should be able to leverage your data the way you want to without worrying about how to manage the data.");
 
         //Set the permissions - the device and user identities that this service can have access to
         Permissions permissions = new Permissions();
@@ -56,11 +55,23 @@ public class AloomaExtension extends MessageProcessor {
                         new UserIdentityPermission(UserIdentity.Type.YAHOO, Identity.Encoding.RAW)
                 )
         );
+        permissions.setDeviceIdentities(
+                Arrays.asList(
+                        new DeviceIdentityPermission(DeviceIdentity.Type.ANDROID_ID, Identity.Encoding.RAW),
+                        new DeviceIdentityPermission(DeviceIdentity.Type.GOOGLE_ADVERTISING_ID, Identity.Encoding.RAW),
+                        new DeviceIdentityPermission(DeviceIdentity.Type.IOS_ADVERTISING_ID, Identity.Encoding.RAW),
+                        new DeviceIdentityPermission(DeviceIdentity.Type.IOS_VENDOR_ID, Identity.Encoding.RAW),
+                        new DeviceIdentityPermission(DeviceIdentity.Type.GOOGLE_CLOUD_MESSAGING_TOKEN, Identity.Encoding.RAW),
+                        new DeviceIdentityPermission(DeviceIdentity.Type.APPLE_PUSH_NOTIFICATION_TOKEN, Identity.Encoding.RAW)
+                )
+        );
+
+        permissions.setAllowAccessLocation(true);
         response.setPermissions(permissions);
 
         List<Setting> processorSettings = Arrays.asList(
-                new TextSetting(SETTING_TOKEN, "Token").setIsRequired(true),
-                new TextSetting(SETTING_HOSTNAME, "Hostname").setIsRequired(true)
+                new TextSetting(SETTING_TOKEN, "The token that corresponds to your Alooma REST input").setIsRequired(true),
+                new TextSetting(SETTING_HOSTNAME, "Your Alooma hostname, i.e. <hostname>.alooma.io").setIsRequired(true)
         );
 
         List<Event.Type> supportedEventTypes = Arrays.asList(
@@ -80,26 +91,16 @@ public class AloomaExtension extends MessageProcessor {
 
         List<RuntimeEnvironment.Type> environments = Arrays.asList(
                 RuntimeEnvironment.Type.ANDROID,
-                RuntimeEnvironment.Type.IOS,
-                RuntimeEnvironment.Type.UNKNOWN
+                RuntimeEnvironment.Type.IOS
                 );
 
         EventProcessingRegistration eventProcessingRegistration = new EventProcessingRegistration()
                 .setSupportedRuntimeEnvironments(environments)
                 .setAccountSettings(processorSettings)
-                .setSupportedEventTypes(supportedEventTypes);
+                .setSupportedEventTypes(supportedEventTypes)
+                .setMaxDataAgeHours(24);
         response.setEventProcessingRegistration(eventProcessingRegistration);
 
-        //Segmentation/Audience registration and processing is treated separately from Event processing
-        //Audience integrations are configured separately in the mParticle UI
-        //Customers can configure a different set of account-level settings (such as API key here), and
-        //Segment-level settings (Mailing List ID here).
-        List<Setting> subscriptionSettings = new LinkedList<>();
-
-        AudienceProcessingRegistration audienceRegistration = new AudienceProcessingRegistration()
-                .setAccountSettings(processorSettings)
-                .setAudienceSubscriptionSettings(subscriptionSettings);
-        response.setAudienceProcessingRegistration(audienceRegistration);
         return response;
     }
 
