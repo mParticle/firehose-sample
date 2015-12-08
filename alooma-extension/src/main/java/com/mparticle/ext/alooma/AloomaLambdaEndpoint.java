@@ -2,7 +2,6 @@ package com.mparticle.ext.alooma;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
-import com.mparticle.ext.sample.AloomaExtension;
 import com.mparticle.sdk.model.Message;
 import com.mparticle.sdk.model.MessageSerializer;
 

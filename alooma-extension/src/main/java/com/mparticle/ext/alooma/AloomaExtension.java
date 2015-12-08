@@ -1,4 +1,4 @@
-package com.mparticle.ext.sample;
+package com.mparticle.ext.alooma;
 
 import java.io.IOException;
 import java.util.Arrays;
