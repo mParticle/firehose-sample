@@ -98,7 +98,7 @@ public class AloomaExtension extends MessageProcessor {
                 .setSupportedRuntimeEnvironments(environments)
                 .setAccountSettings(processorSettings)
                 .setSupportedEventTypes(supportedEventTypes)
-                .setMaxDataAgeHours(24);
+                .setMaxDataAgeHours(24*30);
         response.setEventProcessingRegistration(eventProcessingRegistration);
 
         return response;
