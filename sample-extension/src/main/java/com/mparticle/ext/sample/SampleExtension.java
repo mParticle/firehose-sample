@@ -49,7 +49,9 @@ public class SampleExtension extends MessageProcessor {
         //you can using different settings for Event Processing vs. Audience Processing, but in this case
         //we'll just use the same object, specifying that only an API key is required for each.
         List<Setting> processorSettings = Arrays.asList(
-                new TextSetting(SETTING_API_KEY, "API Key").setIsRequired(true)
+                new TextSetting(SETTING_API_KEY, "API Key")
+                    .setIsRequired(true)
+                    .setDescription("A short description of the purpose and usage of this setting.")
         );
 
         //specify the supported event types. you should override the parent MessageProcessor methods
