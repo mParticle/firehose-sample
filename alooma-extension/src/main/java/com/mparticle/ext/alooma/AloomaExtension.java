@@ -39,7 +39,7 @@ public class AloomaExtension extends MessageProcessor {
     @Override
     public ModuleRegistrationResponse processRegistrationRequest(ModuleRegistrationRequest request) {
         ModuleRegistrationResponse response = new ModuleRegistrationResponse(NAME, "1.0");
-        response.setDescription("Alooma lets you build data pipeline in minutes, so you can focus on your business. Our SaaS service allows you to create scalable, fault-tolerant connections for every data source you have today and will have in the future directly into Amazon Redshift - all in real-time. We believe you should be able to leverage your data the way you want to without worrying about how to manage the data.");
+        response.setDescription("Alooma lets you build data pipelines in minutes, so you can focus on your business. Our SaaS service allows you to create scalable, fault-tolerant connections for every data source you have today and will have in the future directly into Amazon Redshift - all in real-time. We believe you should be able to leverage your data the way you want to without worrying about how to manage the data.");
 
         //Set the permissions - the device and user identities that this service can have access to
         Permissions permissions = new Permissions();
@@ -70,8 +70,8 @@ public class AloomaExtension extends MessageProcessor {
         response.setPermissions(permissions);
 
         List<Setting> processorSettings = Arrays.asList(
-                new TextSetting(SETTING_TOKEN, "The token that corresponds to your Alooma REST input").setIsRequired(true),
-                new TextSetting(SETTING_HOSTNAME, "Your Alooma hostname, i.e. <hostname>.alooma.io").setIsRequired(true)
+                new TextSetting(SETTING_TOKEN, "Alooma Input token").setIsRequired(true).setDescription("The token that corresponds to your Alooma REST input"),
+                new TextSetting(SETTING_HOSTNAME, "Alooma Hostname").setIsRequired(true).setDescription("Your Alooma hostname, i.e. <hostname>.alooma.io")
         );
 
         List<Event.Type> supportedEventTypes = Arrays.asList(
