@@ -39,7 +39,7 @@ public class AloomaExtension extends MessageProcessor {
     @Override
     public ModuleRegistrationResponse processRegistrationRequest(ModuleRegistrationRequest request) {
         ModuleRegistrationResponse response = new ModuleRegistrationResponse(NAME, "1.0");
-        response.setDescription("Alooma lets you build data pipelines in minutes, so you can focus on your business. Our SaaS service allows you to create scalable, fault-tolerant connections for every data source you have today and will have in the future directly into Amazon Redshift - all in real-time. We believe you should be able to leverage your data the way you want to without worrying about how to manage the data.");
+        response.setDescription("Alooma lets you build custom data pipelines in minutes, so you can focus on your business. Our SaaS service provides scalable, fault-tolerant, real-time connections to Amazon Redshift for every kind of data source, from analytical data to transactional sources like MySQL and MongoDB. Break down your data silos and never worry about data loss or pipeline maintenance.");
 
         //Set the permissions - the device and user identities that this service can have access to
         Permissions permissions = new Permissions();
