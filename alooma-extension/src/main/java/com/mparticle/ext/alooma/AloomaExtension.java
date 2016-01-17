@@ -91,7 +91,8 @@ public class AloomaExtension extends MessageProcessor {
 
         List<RuntimeEnvironment.Type> environments = Arrays.asList(
                 RuntimeEnvironment.Type.ANDROID,
-                RuntimeEnvironment.Type.IOS
+                RuntimeEnvironment.Type.IOS,
+                RuntimeEnvironment.Type.TVOS
                 );
 
         EventProcessingRegistration eventProcessingRegistration = new EventProcessingRegistration()
