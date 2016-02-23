@@ -51,6 +51,7 @@ public class SampleExtension extends MessageProcessor {
         List<Setting> processorSettings = Arrays.asList(
                 new TextSetting(SETTING_API_KEY, "API Key")
                     .setIsRequired(true)
+                    .setIsConfidential(true)
                     .setDescription("A short description of the purpose and usage of this setting.")
         );
 
