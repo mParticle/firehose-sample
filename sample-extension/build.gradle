@@ -2,16 +2,13 @@ apply plugin: 'java'
 
 repositories {
     mavenCentral()
-    //for now the SDK is only available via mParticle's Maven server
-    //rather than Maven Central
-    maven { url "http://maven.mparticle.com/" }
 }
 
 dependencies {
     compile (
             'com.amazonaws:aws-lambda-java-core:1.1.0',
             'com.amazonaws:aws-lambda-java-events:1.1.0',
-            'com.mparticle:java-sdk:1.0.3'
+            'com.mparticle:java-sdk:+'
     )
     //useful for testing
     testCompile('junit:junit:4.12')
