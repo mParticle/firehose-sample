@@ -1,5 +1,8 @@
 package com.mparticle.ext.sample;
 
+import com.mparticle.sdk.model.MessageSerializer;
+import com.mparticle.sdk.model.registration.ModuleRegistrationRequest;
+import com.mparticle.sdk.model.registration.ModuleRegistrationResponse;
 import junit.framework.TestCase;
 
 /**
@@ -9,8 +12,16 @@ import junit.framework.TestCase;
  */
 public class SampleExtensionTest extends TestCase {
 
-    public void testProcessRegistrationRequest() throws Exception {
+    MessageSerializer serializer = new MessageSerializer();
 
+    public void testProcessRegistrationRequest() throws Exception {
+        SampleExtension sampleExtension = new SampleExtension();
+        ModuleRegistrationResponse response = sampleExtension.processRegistrationRequest(new ModuleRegistrationRequest());
+        System.out.println();
+        System.out.println("Please send this JSON to mParticle:");
+        System.out.println();
+        System.out.println(serializer.serialize(response));
+        System.out.println();
     }
 
     public void testProcessEventProcessingRequest() throws Exception {
