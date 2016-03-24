@@ -7,6 +7,10 @@ This is a sample showing how to integrate mParticle into a new API, using the [m
 The project is instrumented for unit testing with JUnit, run the tests from a command line interface with:
 
     ./gradlew clean test
+    
+##### JDK Version
+
+The mParticle Java SDK on which this project depends is compiled using **JDK 1.8**. This means that you must use JDK 1.8 to compile this project and execute the tests.
 
 ### Registration JSON
 
