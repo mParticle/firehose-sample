@@ -18,6 +18,10 @@ import java.io.OutputStream;
  */
 public class SampleLambdaEndpoint implements RequestStreamHandler {
 
+    //this object can/should be reused across multiple calls to your RequestStreamHandler,
+    //so initialize it here.
+    MessageSerializer serializer = new MessageSerializer();
+    
     /**
      * This is boilerplate code that you can likely just copy, changing SampleExtension to your own MessageProcessor
      * subclass. This code takes the incoming stream, translates it into objects, and passes those objects into the sample
@@ -26,7 +30,6 @@ public class SampleLambdaEndpoint implements RequestStreamHandler {
     @Override
     public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
         SampleExtension processor = new SampleExtension();
-        MessageSerializer serializer = new MessageSerializer();
         Message request = serializer.deserialize(input, Message.class);
         Message response = processor.processMessage(request);
         serializer.serialize(output, response);
