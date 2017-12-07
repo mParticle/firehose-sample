@@ -43,6 +43,8 @@ public class SampleExtension extends MessageProcessor {
                         new UserIdentityPermission(UserIdentity.Type.CUSTOMER, Identity.Encoding.RAW)
                 )
         );
+        permissions.setAllowAccessIpAddress(true);
+        permissions.setAllowAccessLocation(true);
         response.setPermissions(permissions);
 
         //the extension needs to define the settings it needs in order to connect to its respective service(s).
@@ -62,7 +64,8 @@ public class SampleExtension extends MessageProcessor {
                 Event.Type.PUSH_SUBSCRIPTION,
                 Event.Type.PUSH_MESSAGE_RECEIPT,
                 Event.Type.USER_ATTRIBUTE_CHANGE,
-                Event.Type.USER_IDENTITY_CHANGE);
+                Event.Type.USER_IDENTITY_CHANGE,
+                Event.Type.ATTRIBUTION);
 
         //this extension only supports event data coming from Android and iOS devices
         List<RuntimeEnvironment.Type> environments = Arrays.asList(
