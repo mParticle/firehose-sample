@@ -67,10 +67,11 @@ public class SampleExtension extends MessageProcessor {
                 Event.Type.USER_IDENTITY_CHANGE,
                 Event.Type.ATTRIBUTION);
 
-        //this extension only supports event data coming from Android and iOS devices
+        //this extension only supports event data coming from Android, iOS and Web devices
         List<RuntimeEnvironment.Type> environments = Arrays.asList(
                 RuntimeEnvironment.Type.ANDROID,
-                RuntimeEnvironment.Type.IOS);
+                RuntimeEnvironment.Type.IOS,
+                RuntimeEnvironment.Type.MOBILEWEB);
 
         //finally use all of the above to assemble the EventProcessingRegistration object and set it in the response
         EventProcessingRegistration eventProcessingRegistration = new EventProcessingRegistration()
