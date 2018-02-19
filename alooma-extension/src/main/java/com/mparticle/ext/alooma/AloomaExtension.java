@@ -213,9 +213,6 @@ public class AloomaExtension extends MessageProcessor {
     }
 
     private void sendEvent(Event event) throws IOException{
-//        Response response = webTarget.path("rest/"+token).request()
-//            .accept(MediaType.APPLICATION_JSON_TYPE)
-//            .post(Entity.json(event));
         SendMessageRequest send_msg_request = new SendMessageRequest()
             .withQueueUrl(queueUrl)
             .withMessageBody(mapper.writeValueAsString(event));
