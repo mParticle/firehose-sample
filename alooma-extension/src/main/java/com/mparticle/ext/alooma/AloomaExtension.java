@@ -218,8 +218,7 @@ public class AloomaExtension extends MessageProcessor {
 //            .post(Entity.json(event));
         SendMessageRequest send_msg_request = new SendMessageRequest()
             .withQueueUrl(queueUrl)
-            .withMessageBody(mapper.writeValueAsString(event))
-            .withDelaySeconds(5);
+            .withMessageBody(mapper.writeValueAsString(event));
         sqs.sendMessage(send_msg_request);
 
     }
