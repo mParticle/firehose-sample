@@ -1,13 +1,13 @@
 package com.mparticle.ext.alooma;
 
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mparticle.sdk.MessageProcessor;
 import com.mparticle.sdk.model.audienceprocessing.*;
@@ -20,6 +20,8 @@ import org.glassfish.jersey.jackson.JacksonFeature;
  * Alooma mParticle Firehose extension.
  */
 public class AloomaExtension extends MessageProcessor {
+
+    private static final String QUEUE_NAME = "mparticleEventQueue";
 
     //this name will show up in the mParticle UI
     public static final String NAME = "Alooma";
@@ -35,6 +37,10 @@ public class AloomaExtension extends MessageProcessor {
             .register(ObjectMapper.class)
             .register(JacksonFeature.class);
     WebTarget webTarget;
+
+    AmazonSQS sqs = AmazonSQSClientBuilder.defaultClient();
+    String queueUrl = sqs.getQueueUrl(QUEUE_NAME).getQueueUrl();
+    ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public ModuleRegistrationResponse processRegistrationRequest(ModuleRegistrationRequest request) {
@@ -92,7 +98,8 @@ public class AloomaExtension extends MessageProcessor {
         List<RuntimeEnvironment.Type> environments = Arrays.asList(
                 RuntimeEnvironment.Type.ANDROID,
                 RuntimeEnvironment.Type.IOS,
-                RuntimeEnvironment.Type.TVOS
+                RuntimeEnvironment.Type.TVOS,
+                RuntimeEnvironment.Type.MOBILEWEB
                 );
 
         EventProcessingRegistration eventProcessingRegistration = new EventProcessingRegistration()
@@ -206,8 +213,14 @@ public class AloomaExtension extends MessageProcessor {
     }
 
     private void sendEvent(Event event) throws IOException{
-        Response response = webTarget.path("rest/"+token).request()
-                .accept(MediaType.APPLICATION_JSON_TYPE)
-                .post(Entity.json(event));
+//        Response response = webTarget.path("rest/"+token).request()
+//            .accept(MediaType.APPLICATION_JSON_TYPE)
+//            .post(Entity.json(event));
+        SendMessageRequest send_msg_request = new SendMessageRequest()
+            .withQueueUrl(queueUrl)
+            .withMessageBody(mapper.writeValueAsString(event))
+            .withDelaySeconds(5);
+        sqs.sendMessage(send_msg_request);
+
     }
 }
