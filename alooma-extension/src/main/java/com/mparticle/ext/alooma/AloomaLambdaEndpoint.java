@@ -33,7 +33,6 @@ public class AloomaLambdaEndpoint implements RequestStreamHandler {
         System.out.println("Initialized processor, desirializing message");
         Message request = serializer.deserialize(input, Message.class);
         Message response = processor.processMessage(request);
-        //processor.sendEvents();
         System.out.println("Sent events to sqs");
         serializer.serialize(output, response);
     }

@@ -61,10 +61,12 @@ public class AloomaExtension extends MessageProcessor {
         );
 
         permissions.setAllowAccessLocation(true);
+        permissions.setAllowDeviceInformation(true);
+        permissions.setAllowUserAttributes(true);
         response.setPermissions(permissions);
 
         List<Setting> processorSettings = Arrays.asList(
-                new TextSetting(SETTING_TOKEN, "Alooma Input token").setIsRequired(true).setDescription("The token that corresponds to your Alooma REST input")
+                new TextSetting(SETTING_TOKEN, "Alooma Input token").setIsRequired(true).setIsConfidential(true).setDescription("The token that corresponds to your Alooma REST input")
         );
 
         List<Event.Type> supportedEventTypes = Arrays.asList(
