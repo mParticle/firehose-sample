@@ -5,38 +5,26 @@ import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.WebTarget;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mparticle.sdk.MessageProcessor;
 import com.mparticle.sdk.model.audienceprocessing.*;
 import com.mparticle.sdk.model.eventprocessing.*;
 import com.mparticle.sdk.model.registration.*;
-import org.glassfish.jersey.client.JerseyClientBuilder;
-import org.glassfish.jersey.jackson.JacksonFeature;
 
 /**
  * Alooma mParticle Firehose extension.
  */
 public class AloomaExtension extends MessageProcessor {
 
-    private static final String QUEUE_NAME = "mparticleEventQueue";
+    private static final String QUEUE_NAME = System.getenv("MPARTICLE_SQS_QUEUE");
 
     //this name will show up in the mParticle UI
     public static final String NAME = "Alooma";
 
     //The Alooma input token
     public static final String SETTING_TOKEN = "token";
-    //The Alooma hostname <hostname>.alooma.io
-    public static final String SETTING_HOSTNAME = "hostname";
 
-    String hostname;
-    String token;
-    Client client = JerseyClientBuilder.createClient()
-            .register(ObjectMapper.class)
-            .register(JacksonFeature.class);
-    WebTarget webTarget;
 
     AmazonSQS sqs = AmazonSQSClientBuilder.defaultClient();
     String queueUrl = sqs.getQueueUrl(QUEUE_NAME).getQueueUrl();
@@ -45,7 +33,7 @@ public class AloomaExtension extends MessageProcessor {
     @Override
     public ModuleRegistrationResponse processRegistrationRequest(ModuleRegistrationRequest request) {
         ModuleRegistrationResponse response = new ModuleRegistrationResponse(NAME, "1.0");
-        response.setDescription("Alooma lets you build custom data pipelines in minutes, so you can focus on your business. Our SaaS service provides scalable, fault-tolerant, real-time connections to Amazon Redshift for every kind of data source, from analytical data to transactional sources like MySQL and MongoDB. Break down your data silos and never worry about data loss or pipeline maintenance.");
+        response.setDescription("<a href=\"https://www.alooma.com\" target=\"_blank\">Alooma</a> lets you build scalable, real-time data pipelines, so you can focus on your business. Move all your data, from SaaS to transactional databases, to your data warehouse.");
 
         //Set the permissions - the device and user identities that this service can have access to
         Permissions permissions = new Permissions();
@@ -76,8 +64,7 @@ public class AloomaExtension extends MessageProcessor {
         response.setPermissions(permissions);
 
         List<Setting> processorSettings = Arrays.asList(
-                new TextSetting(SETTING_TOKEN, "Alooma Input token").setIsRequired(true).setDescription("The token that corresponds to your Alooma REST input"),
-                new TextSetting(SETTING_HOSTNAME, "Alooma Hostname").setIsRequired(true).setDescription("Your Alooma hostname, i.e. <hostname>.alooma.io")
+                new TextSetting(SETTING_TOKEN, "Alooma Input token").setIsRequired(true).setDescription("The token that corresponds to your Alooma REST input")
         );
 
         List<Event.Type> supportedEventTypes = Arrays.asList(
@@ -86,7 +73,6 @@ public class AloomaExtension extends MessageProcessor {
                 Event.Type.ERROR,
                 Event.Type.PRIVACY_SETTING_CHANGE,
                 Event.Type.PRODUCT_ACTION,
-                Event.Type.PUSH_MESSAGE_RECEIPT,
                 Event.Type.PUSH_SUBSCRIPTION,
                 Event.Type.SCREEN_VIEW,
                 Event.Type.SESSION_END,
@@ -120,87 +106,16 @@ public class AloomaExtension extends MessageProcessor {
      */
     @Override
     public EventProcessingResponse processEventProcessingRequest(EventProcessingRequest request) throws IOException {
-        //do some setup, then call super. if you don't call super, you'll effectively short circuit
-        //the whole thing, which isn't really fun for anyone.
-        Account account = request.getAccount();
-        hostname = account.getStringSetting(SETTING_HOSTNAME, true, null);
-        token = account.getStringSetting(SETTING_TOKEN, true, null);
-        webTarget = client.target("https://"+hostname+".alooma.io");
 
-        return super.processEventProcessingRequest(request);
+        if (request.getEvents().size() > 0) {
+            Account account = request.getAccount();
+            account.getStringSetting(SETTING_TOKEN, true, null);
+            sendEvent(request);
+        }
+
+        return new EventProcessingResponse();
     }
 
-    @Override
-    public void processProductActionEvent(ProductActionEvent event) throws IOException {
-        sendEvent(event);
-        super.processProductActionEvent(event);
-    }
-
-    @Override
-    public void processApplicationStateTransitionEvent(ApplicationStateTransitionEvent event) throws IOException {
-        sendEvent(event);
-        super.processApplicationStateTransitionEvent(event);
-    }
-
-    @Override
-    public void processCustomEvent(CustomEvent event) throws IOException {
-        sendEvent(event);
-        super.processCustomEvent(event);
-    }
-
-    @Override
-    public void processErrorEvent(ErrorEvent event) throws IOException {
-        sendEvent(event);
-        super. processErrorEvent(event);
-    }
-
-    @Override
-    public void processPrivacySettingChangeEvent(PrivacySettingChangeEvent event) throws IOException {
-        sendEvent(event);
-        super.processPrivacySettingChangeEvent(event);
-    }
-
-    @Override
-    public void processPushMessageReceiptEvent(PushMessageReceiptEvent event) throws IOException {
-        sendEvent(event);
-        super.processPushMessageReceiptEvent(event);
-    }
-
-    @Override
-    public void processPushSubscriptionEvent(PushSubscriptionEvent event) throws IOException {
-        sendEvent(event);
-        super.processPushSubscriptionEvent(event);
-    }
-
-    @Override
-    public void processScreenViewEvent(ScreenViewEvent event) throws IOException {
-        sendEvent(event);
-        super.processScreenViewEvent(event);
-    }
-
-    @Override
-    public void processSessionStartEvent(SessionStartEvent event) throws IOException {
-        sendEvent(event);
-        super.processSessionStartEvent(event);
-    }
-
-    @Override
-    public void processSessionEndEvent(SessionEndEvent event) throws IOException {
-        sendEvent(event);
-        super.processSessionEndEvent(event);
-    }
-
-    @Override
-    public void processUserAttributeChangeEvent(UserAttributeChangeEvent event) throws IOException {
-        sendEvent(event);
-        super.processUserAttributeChangeEvent(event);
-    }
-
-    @Override
-    public void processUserIdentityChangeEvent(UserIdentityChangeEvent event) throws IOException {
-        sendEvent(event);
-        super.processUserIdentityChangeEvent(event);
-    }
 
     @Override
     public AudienceMembershipChangeResponse processAudienceMembershipChangeRequest(AudienceMembershipChangeRequest request) throws IOException {
@@ -212,11 +127,10 @@ public class AloomaExtension extends MessageProcessor {
         return super.processAudienceSubscriptionRequest(request);
     }
 
-    private void sendEvent(Event event) throws IOException{
+    public void sendEvent(EventProcessingRequest eventRequest) throws IOException{
         SendMessageRequest send_msg_request = new SendMessageRequest()
             .withQueueUrl(queueUrl)
-            .withMessageBody(mapper.writeValueAsString(event));
+            .withMessageBody(mapper.writeValueAsString(eventRequest));
         sqs.sendMessage(send_msg_request);
-
     }
 }

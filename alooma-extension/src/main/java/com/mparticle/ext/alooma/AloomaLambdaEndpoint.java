@@ -21,7 +21,7 @@ public class AloomaLambdaEndpoint implements RequestStreamHandler {
     //this object can/should be reused across multiple calls to your RequestStreamHandler,
     //so initialize it here.
     MessageSerializer serializer = new MessageSerializer();
-    
+
     /**
      * This is boilerplate code that you can likely just copy, changing SampleExtension to your own MessageProcessor
      * subclass. This code takes the incoming stream, translates it into objects, and passes those objects into the sample
@@ -30,8 +30,11 @@ public class AloomaLambdaEndpoint implements RequestStreamHandler {
     @Override
     public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
         AloomaExtension processor = new AloomaExtension();
+        System.out.println("Initialized processor, desirializing message");
         Message request = serializer.deserialize(input, Message.class);
         Message response = processor.processMessage(request);
+        //processor.sendEvents();
+        System.out.println("Sent events to sqs");
         serializer.serialize(output, response);
     }
 }
