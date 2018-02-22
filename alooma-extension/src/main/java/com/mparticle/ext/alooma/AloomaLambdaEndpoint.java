@@ -1,4 +1,4 @@
-package com.mparticle.ext.sample;
+package com.mparticle.ext.alooma;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
@@ -16,12 +16,12 @@ import java.io.OutputStream;
  * mParticle has provided a Java SDK and handeful of helper APIs, mostly wrapped into the MessageSerializer and MessageProcessor
  * classes, that translate incoming JSON data from mParticle into usable POJOs
  */
-public class SampleLambdaEndpoint implements RequestStreamHandler {
+public class AloomaLambdaEndpoint implements RequestStreamHandler {
 
     //this object can/should be reused across multiple calls to your RequestStreamHandler,
     //so initialize it here.
     MessageSerializer serializer = new MessageSerializer();
-    
+
     /**
      * This is boilerplate code that you can likely just copy, changing SampleExtension to your own MessageProcessor
      * subclass. This code takes the incoming stream, translates it into objects, and passes those objects into the sample
@@ -29,9 +29,11 @@ public class SampleLambdaEndpoint implements RequestStreamHandler {
      */
     @Override
     public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
-        SampleExtension processor = new SampleExtension();
+        AloomaExtension processor = new AloomaExtension();
+        System.out.println("Initialized processor, desirializing message");
         Message request = serializer.deserialize(input, Message.class);
         Message response = processor.processMessage(request);
+        System.out.println("Sent events to sqs");
         serializer.serialize(output, response);
     }
 }
