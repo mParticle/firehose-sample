@@ -8,7 +8,7 @@ repositories {
 
 dependencies {
     compile (
-            'com.amazonaws:aws-lambda-java-core:1.7.0',
+            'com.amazonaws:aws-lambda-java-core:1.2.0',
             'com.amazonaws:aws-lambda-java-events:1.7.0',
             'com.mparticle:java-sdk:+'
     )
