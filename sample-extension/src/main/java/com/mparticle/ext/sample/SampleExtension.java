@@ -10,6 +10,7 @@ import com.mparticle.sdk.model.registration.*;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,29 +33,24 @@ public class SampleExtension extends MessageProcessor {
 
     @Override
     public ModuleRegistrationResponse processRegistrationRequest(ModuleRegistrationRequest request) {
-        ModuleRegistrationResponse response = new ModuleRegistrationResponse(NAME, "1.0");
-        response.setDescription("A brief description of your company.");
-
         //Set the permissions - the device and user identities that this service can have access to
-        Permissions permissions = new Permissions();
-        permissions.setUserIdentities(
-                Arrays.asList(
-                        new UserIdentityPermission(UserIdentity.Type.EMAIL, Identity.Encoding.RAW),
-                        new UserIdentityPermission(UserIdentity.Type.CUSTOMER, Identity.Encoding.RAW)
-                )
+        Permissions permissions = new Permissions()
+            .setAllowAccessIpAddress(true)
+            .setAllowAccessLocation(true)
+            .setUserIdentities(Arrays.asList(
+                    new UserIdentityPermission(UserIdentity.Type.EMAIL, Identity.Encoding.RAW),
+                    new UserIdentityPermission(UserIdentity.Type.CUSTOMER, Identity.Encoding.RAW)
+            )
         );
-        permissions.setAllowAccessIpAddress(true);
-        permissions.setAllowAccessLocation(true);
-        response.setPermissions(permissions);
 
         //the extension needs to define the settings it needs in order to connect to its respective service(s).
         //you can using different settings for Event Processing vs. Audience Processing, but in this case
         //we'll just use the same object, specifying that only an API key is required for each.
-        List<Setting> processorSettings = Arrays.asList(
+        List<Setting> processorSettings = Collections.singletonList(
                 new TextSetting(SETTING_API_KEY, "API Key")
-                    .setIsRequired(true)
-                    .setIsConfidential(true)
-                    .setDescription("A short description of the purpose and usage of this setting.")
+                        .setIsRequired(true)
+                        .setIsConfidential(true)
+                        .setDescription("A short description of the purpose and usage of this setting.")
         );
 
         //specify the supported event types. you should override the parent MessageProcessor methods
@@ -77,7 +73,6 @@ public class SampleExtension extends MessageProcessor {
                 .setSupportedRuntimeEnvironments(environments)
                 .setAccountSettings(processorSettings)
                 .setSupportedEventTypes(supportedEventTypes);
-        response.setEventProcessingRegistration(eventProcessingRegistration);
 
         //Segmentation/Audience registration and processing is treated separately from Event processing
         //Audience integrations are configured separately in the mParticle UI
@@ -88,9 +83,13 @@ public class SampleExtension extends MessageProcessor {
 
         AudienceProcessingRegistration audienceRegistration = new AudienceProcessingRegistration()
                 .setAccountSettings(processorSettings)
-                .setAudienceSubscriptionSettings(subscriptionSettings);
-        response.setAudienceProcessingRegistration(audienceRegistration);
-        return response;
+                .setAudienceConnectionSettings(subscriptionSettings);
+
+        return new ModuleRegistrationResponse(NAME, "1.0")
+                .setDescription("A brief description of your company.")
+                .setAudienceProcessingRegistration(audienceRegistration)
+                .setEventProcessingRegistration(eventProcessingRegistration)
+                .setPermissions(permissions);
     }
 
     /**
