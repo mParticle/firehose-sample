@@ -5,6 +5,8 @@ import com.mparticle.sdk.model.audienceprocessing.AudienceMembershipChangeReques
 import com.mparticle.sdk.model.audienceprocessing.AudienceMembershipChangeResponse;
 import com.mparticle.sdk.model.audienceprocessing.AudienceSubscriptionRequest;
 import com.mparticle.sdk.model.audienceprocessing.AudienceSubscriptionResponse;
+import com.mparticle.sdk.model.dsrprocessing.DsrProcessingRequest;
+import com.mparticle.sdk.model.dsrprocessing.DsrProcessingResponse;
 import com.mparticle.sdk.model.eventprocessing.*;
 import com.mparticle.sdk.model.registration.*;
 
@@ -33,15 +35,19 @@ public class SampleExtension extends MessageProcessor {
 
     @Override
     public ModuleRegistrationResponse processRegistrationRequest(ModuleRegistrationRequest request) {
-        //Set the permissions - the device and user identities that this service can have access to
+        //Set the permissions - the user, device and partner identities that this service can have access to
         Permissions permissions = new Permissions()
             .setAllowAccessIpAddress(true)
             .setAllowAccessLocation(true)
             .setUserIdentities(Arrays.asList(
                     new UserIdentityPermission(UserIdentity.Type.EMAIL, Identity.Encoding.RAW),
-                    new UserIdentityPermission(UserIdentity.Type.CUSTOMER, Identity.Encoding.RAW)
-            )
-        );
+                    new UserIdentityPermission(UserIdentity.Type.CUSTOMER, Identity.Encoding.RAW)))
+            .setDeviceIdentities(Arrays.asList(
+                    new DeviceIdentityPermission(DeviceIdentity.Type.ANDROID_ID, Identity.Encoding.RAW),
+                    new DeviceIdentityPermission(DeviceIdentity.Type.GOOGLE_ADVERTISING_ID, Identity.Encoding.RAW)))
+            .setPartnerIdentities(Arrays.asList(
+                    new PartnerIdentityPermission("partnerIdentity", Identity.Encoding.RAW)
+            ));
 
         //the extension needs to define the settings it needs in order to connect to its respective service(s).
         //you can using different settings for Event Processing vs. Audience Processing, but in this case
@@ -85,10 +91,20 @@ public class SampleExtension extends MessageProcessor {
                 .setAccountSettings(processorSettings)
                 .setAudienceConnectionSettings(subscriptionSettings);
 
+        // Specify the supported DSR request types.
+        List<DsrProcessingRequest.Type> supportedDsrTypes = Arrays.asList(DsrProcessingRequest.Type.ERASURE);
+
+        // Set up DsrProcessingRegistration object
+        DsrProcessingRegistration dsrRegistration = new DsrProcessingRegistration()
+                .setAccountSettings(processorSettings)
+                .setDomain("your domain")
+                .setSupportedDsrTypes(supportedDsrTypes);
+
         return new ModuleRegistrationResponse(NAME, "1.0")
                 .setDescription("A brief description of your company.")
                 .setAudienceProcessingRegistration(audienceRegistration)
                 .setEventProcessingRegistration(eventProcessingRegistration)
+                .setDsrProcessingRegistration(dsrRegistration)
                 .setPermissions(permissions);
     }
 
@@ -133,5 +149,10 @@ public class SampleExtension extends MessageProcessor {
     @Override
     public AudienceSubscriptionResponse processAudienceSubscriptionRequest(AudienceSubscriptionRequest request) throws IOException {
         return super.processAudienceSubscriptionRequest(request);
+    }
+
+    @Override
+    public DsrProcessingResponse processDsrProcessingRequest(DsrProcessingRequest request) throws IOException {
+        return super.processDsrProcessingRequest(request);
     }
 }
